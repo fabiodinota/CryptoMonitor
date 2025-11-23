@@ -1,0 +1,10 @@
+# .NET Core
+[Bb]in/
+[Oo]bj/
+.idea/
+.vscode/
+*.user
+*.suo
+
+# macOS
+.DS_Store
