@@ -1,13 +1,25 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace CryptoMonitor.Domain
 {
     public class UserReview
     {
         public int Id { get; set; }
+        
+        [Required]
         public string UserName { get; set; }
+        
+        [Required]
         public string Comment { get; set; }
-        public double Rating { get; set; }
+        
+        [Required]
+        [Range(0, 5, ErrorMessage = "Rating must be between 0 and 5")]
+        public int Rating { get; set; }
+        
+        [Required]
         public DateTime DatePosted { get; set; }
         
+        [Required]
         public Exchange Exchange { get; set; }
 
         public UserReview() { }

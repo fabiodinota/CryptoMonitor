@@ -31,8 +31,8 @@ namespace CryptoMonitor.DAL
             _cryptos.AddRange(new[] { btc, eth, usdt, pepe });
             
             // User reviews
-            var rev1 = new UserReview(1, "Alice", "Great UI", binance) { Rating = 4.5, DatePosted = System.DateTime.Now.AddDays(-5) };
-            var rev2 = new UserReview(2, "Bob", "Fees too high", coinbase) { Rating = 1.0, DatePosted = System.DateTime.Now.AddDays(-1) };
+            var rev1 = new UserReview(1, "Alice", "Great UI", binance) { Rating = 4, DatePosted = System.DateTime.Now.AddDays(-5) };
+            var rev2 = new UserReview(2, "Bob", "Fees too high", coinbase) { Rating = 1, DatePosted = System.DateTime.Now.AddDays(-1) };
 
             // Link reviews to exchanges
             binance.Reviews.Add(rev1);

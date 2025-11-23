@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using CryptoMonitor.DAL;
 using CryptoMonitor.Domain;
 
@@ -5,7 +6,7 @@ namespace CryptoMonitor.BL
 {
     public class CryptoManager : IManager
     {
-        
+
         private readonly IRepository _repository;
 
         public CryptoManager(IRepository repositoryProp)
@@ -21,16 +22,26 @@ namespace CryptoMonitor.BL
         public void AddCryptocurrency(string name, string symbol, double currentPrice, CryptoType type, long? maxSupply,
             List<Exchange> exchanges)
         {
-            _repository.CreateCryptocurrency(
-                new Cryptocurrency
-                {
-                    Name = name, 
-                    Symbol = symbol, 
-                    CurrentPrice = currentPrice, 
-                    Type = type, 
-                    MaxSupply = maxSupply, 
-                    Exchanges = exchanges
-                });
+            var cryptocurrency = new Cryptocurrency
+            {
+                Name = name,
+                Symbol = symbol,
+                CurrentPrice = currentPrice,
+                Type = type,
+                MaxSupply = maxSupply,
+                Exchanges = exchanges
+            };
+            
+            var isValid = ValidateByTryValidateObject(cryptocurrency);
+
+            if (isValid)
+            {
+                exchanges.ForEach(e => e.Cryptocurrencies.Add(cryptocurrency));
+
+                _repository.CreateCryptocurrency(cryptocurrency);
+                
+                Console.WriteLine("Cryptocurrency added successfully!");
+            }
         }
 
         public IEnumerable<Cryptocurrency> GetAllCryptocurrencies()
@@ -50,14 +61,25 @@ namespace CryptoMonitor.BL
 
         public void AddExchange(string name, string website, int trustScore, List<Cryptocurrency> cryptocurrencies)
         {
-            _repository.CreateExchange(
-                new Exchange
-                {
-                    Name = name, 
-                    Website = website, 
-                    TrustScore = trustScore, 
-                    Cryptocurrencies = cryptocurrencies
-                });
+
+            var exchange = new Exchange
+            {
+                Name = name,
+                Website = website,
+                TrustScore = trustScore,
+                Cryptocurrencies = cryptocurrencies
+            };
+
+            var isValid = ValidateByTryValidateObject(exchange);
+
+            if (isValid)
+            {
+                cryptocurrencies.ForEach(c => c.Exchanges.Add(exchange));
+
+                _repository.CreateExchange(exchange);
+                
+                Console.WriteLine("Exchange added successfully!");
+            }
         }
 
         public IEnumerable<Exchange> GetAllExchanges()
@@ -69,8 +91,8 @@ namespace CryptoMonitor.BL
         {
             return _repository.ReadExchangesFiltered(namePart, minTrustScore);
         }
-        
-        public void AddUserReview(string userName, string comment, double rating, Exchange exchange)
+
+        public void AddUserReview(string userName, string comment, int rating, Exchange exchange)
         {
             var review = new UserReview
             {
@@ -81,9 +103,43 @@ namespace CryptoMonitor.BL
                 Exchange = exchange
             };
             
-            exchange.Reviews.Add(review);
+            var isValid = ValidateByTryValidateObject(review);
             
-            _repository.CreateUserReview(review); 
+
+            if (isValid)
+            {
+                exchange.Reviews.Add(review);
+
+                _repository.CreateUserReview(review);
+                
+                Console.WriteLine("User Review added successfully!");
+            }
+        }
+
+        private static void ValidateByValidateObject(object obj)
+        {
+            ValidationContext validationContext = new ValidationContext(obj);
+            try
+            {
+                Validator.ValidateObject(obj, validationContext, validateAllProperties: true);
+                Console.WriteLine("This object is valid (using ValidateObject)");
+            }
+            catch (ValidationException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private static bool ValidateByTryValidateObject(object obj)
+        {
+            ValidationContext validationContext = new ValidationContext(obj);
+            List<ValidationResult> validationResults = new List<ValidationResult>();
+            bool isValid = Validator.TryValidateObject(obj, validationContext
+                , validationResults, true);
+            if (!isValid)
+                foreach (var validationError in validationResults)
+                    Console.WriteLine(validationError.ErrorMessage);
+            return isValid;
         }
     }
 }

@@ -174,7 +174,6 @@ namespace CryptoMonitor.UI.CA
             }
 
             _manager.AddCryptocurrency(name, symbol, price, type, maxSupply, selectedExchanges);
-            Console.WriteLine("Cryptocurrency added successfully!");
         }
 
         private void AddExchange()
@@ -194,7 +193,7 @@ namespace CryptoMonitor.UI.CA
             for (int i = 0; i < allCryptocurrencies.Count; i++)
             {
                 Console.WriteLine($"{i + 1}) {allCryptocurrencies[i].Name}");
-        }
+            }
             Console.Write("Enter comma-separated numbers of cryptocurrencies to link: ");
             var cryptoChoices = Console.ReadLine().Split(',');
             foreach (var choice in cryptoChoices)
@@ -206,9 +205,7 @@ namespace CryptoMonitor.UI.CA
             }
             
             _manager.AddExchange(name, website, trustScore, selectedCryptocurrencies);
-            Console.WriteLine("Exchange added successfully!");
-
-            }
+        }
         
         private void AddUserReview()
         {
@@ -222,7 +219,7 @@ namespace CryptoMonitor.UI.CA
             string comment = Console.ReadLine();
 
             Console.Write("Enter Rating (0-5): ");
-            if (!double.TryParse(Console.ReadLine(), out double rating))
+            if (int.TryParse(Console.ReadLine(), out int rating))
             {
                 rating = 0;
             }
@@ -248,7 +245,6 @@ namespace CryptoMonitor.UI.CA
                 var selectedExchange = allExchanges[index - 1];
 
                 _manager.AddUserReview(userName, comment, rating, selectedExchange);
-                Console.WriteLine("Review added successfully!");
             }
             else
             {

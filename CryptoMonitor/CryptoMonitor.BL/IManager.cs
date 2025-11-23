@@ -31,7 +31,7 @@ public interface IManager
     void AddUserReview(
         string userName, 
         string comment, 
-        double rating, 
+        int rating, 
         Exchange exchange
         );
 }
