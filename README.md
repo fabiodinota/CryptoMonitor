@@ -30,9 +30,6 @@
 > *Add Cryptocurrency Form: Multi-step form allowing selection of Max Supply and Exchanges via a multi-select list.*
 <img width="3141" height="1398" alt="localhost_7181_Crypto_Add" src="https://github.com/user-attachments/assets/f565cadb-b8f4-4cb8-82cc-4d1b2f677516" />
 
-![Application Screenshot](https://via.placeholder.com/800x400.png?text=Add+Your+Screenshot+Here)
-*(Replace this link with a screenshot of your MVC 'Exchange Listings' page)*
-
 ---
 
 ## ✨ Key Features
