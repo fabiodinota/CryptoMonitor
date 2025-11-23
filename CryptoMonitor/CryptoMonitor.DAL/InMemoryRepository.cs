@@ -65,7 +65,7 @@ namespace CryptoMonitor.DAL
             return _cryptos;
         }
 
-        public IEnumerable<Cryptocurrency> ReadCryptocurrenciesFiltered(CryptoType? type, Exchange? exchange)
+        public IEnumerable<Cryptocurrency> ReadCryptocurrenciesFiltered(CryptoType? type, Exchange exchange)
         {
             var query = _cryptos.AsQueryable();
             if (type.HasValue)

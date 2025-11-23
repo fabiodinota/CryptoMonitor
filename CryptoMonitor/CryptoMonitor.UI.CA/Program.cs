@@ -1,12 +1,16 @@
 ﻿using CryptoMonitor.BL;
 using CryptoMonitor.Domain;
 using CryptoMonitor.DAL;
+using CryptoMonitor.DAL.EF;
+using Microsoft.EntityFrameworkCore;
+using System.IO;
 
 namespace CryptoMonitor.UI.CA
 {
     class Program
     {
         private readonly IManager _manager;
+
 
         public Program(IManager manager)
         {
@@ -15,12 +19,31 @@ namespace CryptoMonitor.UI.CA
 
         static void Main(string[] args)
         {
-            // Initialize repository and manager
-            IRepository repository = new InMemoryRepository();
-            IManager manager = new CryptoManager(repository);
+            string dbPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../CryptoMonitor.db"));
+    
+            Console.WriteLine($"Database bestand locatie: {dbPath}");
 
-            // Seed the data
-            InMemoryRepository.Seed();
+            var optionsBuilder = new DbContextOptionsBuilder<CryptoMonitorDbContext>();
+            optionsBuilder.UseSqlite($"Data Source={dbPath}");
+
+            using var context = new CryptoMonitorDbContext(optionsBuilder.Options);         
+            
+            bool dbCreated = context.CreateDatabase(false); 
+            
+            if (dbCreated)
+            {
+                Console.WriteLine("Database created successfully.");
+                DataSeeder.Seed(context); 
+                Console.WriteLine("Data seeded.");
+            }
+            else
+            {
+                Console.WriteLine("Database already exists. Seeding skipped.");
+            }
+            
+            IRepository repository = new Repository(context);
+
+            IManager manager = new CryptoManager(repository);
             
             Program program = new Program(manager);
             program.Run();

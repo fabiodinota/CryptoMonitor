@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CryptoMonitor.Domain
 {
@@ -14,7 +15,11 @@ namespace CryptoMonitor.Domain
         [Range(1, 10, ErrorMessage = "Trust Score must be between 1 and 10")]
         public int TrustScore { get; set; } 
 
+        [NotMapped]
         public List<Cryptocurrency> Cryptocurrencies { get; set; } = new List<Cryptocurrency>();
+        
+        [NotMapped]
+
         public List<UserReview> Reviews { get; set; } = new List<UserReview>();
 
         public override string ToString()

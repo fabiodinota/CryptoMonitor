@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CryptoMonitor.Domain
 {
@@ -25,6 +26,7 @@ namespace CryptoMonitor.Domain
         public long? MaxSupply { get; set; }
 
         // nav props (*-*)
+        [NotMapped]
         public List<Exchange> Exchanges { get; set; } = new List<Exchange>();
         
         public IEnumerable<ValidationResult> Validate (ValidationContext validationContext)

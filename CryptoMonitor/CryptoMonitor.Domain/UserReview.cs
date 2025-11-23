@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CryptoMonitor.Domain
 {
@@ -20,6 +21,8 @@ namespace CryptoMonitor.Domain
         public DateTime DatePosted { get; set; }
         
         [Required]
+        [NotMapped]
+
         public Exchange Exchange { get; set; }
 
         public UserReview() { }
