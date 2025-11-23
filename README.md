@@ -12,7 +12,23 @@
 
 ## 📷 Demo
 
-> *Dashboard view showing recent Exchange Listings.*
+> *Home Page (Index): Overview of all Cryptocurrencies.*
+<img width="3141" height="1398" alt="localhost_7181_Crypto" src="https://github.com/user-attachments/assets/500c3889-0840-4641-a078-88e3c538e0c4" />
+
+> *Exchanges Index: Overview of all tracked exchanges.*
+<img width="3141" height="1398" alt="localhost_7181_Exchange" src="https://github.com/user-attachments/assets/399a495d-d10a-454a-8381-cbdcd521a321" />
+
+> *Exchange Listings Dashboard: Feed of recently added market pairs (Crypto to Exchange).*
+<img width="3141" height="1398" alt="localhost_7181_ExchangeListing" src="https://github.com/user-attachments/assets/2c8e4133-6ca4-4b62-acee-e8ec26d2c3ab" />
+
+> *Cryptocurrency Details: Showing scalar properties and related Exchanges via the Listings table.*
+<img width="3141" height="1398" alt="localhost_7181_Crypto_Details_1" src="https://github.com/user-attachments/assets/df0fddcb-2e1b-4841-9cc6-8d7525a2547b" />
+
+> *Exchange Details: Showing scalar properties, trust score, and related User Reviews.*
+<img width="3141" height="1398" alt="localhost_7181_Exchange_Details_1" src="https://github.com/user-attachments/assets/8169812b-51e1-4a7d-b851-1d6c36b20313" />
+
+> *Add Cryptocurrency Form: Multi-step form allowing selection of Max Supply and Exchanges via a multi-select list.*
+<img width="3141" height="1398" alt="localhost_7181_Crypto_Add" src="https://github.com/user-attachments/assets/f565cadb-b8f4-4cb8-82cc-4d1b2f677516" />
 
 ![Application Screenshot](https://via.placeholder.com/800x400.png?text=Add+Your+Screenshot+Here)
 *(Replace this link with a screenshot of your MVC 'Exchange Listings' page)*
