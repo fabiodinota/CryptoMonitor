@@ -1,0 +1,46 @@
+services:
+  # Your .NET Application
+  cryptomonitor:
+    image: cryptomonitor-app
+    container_name: cryptomonitor_app
+    build: .
+    restart: always
+    environment:
+      # Override the connection string for Docker
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/CryptoMonitor.db
+      - ASPNETCORE_URLS=http://+:8080
+    volumes:
+      # Persist the database on the host machine
+      - ./db_data:/app/data
+    networks:
+      - crypto-network
+
+  # Nginx Reverse Proxy (Handles the domain & SSL)
+  nginx:
+    image: nginx:latest
+    container_name: cryptomonitor_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      # Map Let's Encrypt certificates (we'll generate these later)
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - cryptomonitor
+    networks:
+      - crypto-network
+
+  # Certbot (For free SSL certificates)
+  certbot:
+    image: certbot/certbot
+    container_name: cryptomonitor_certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+
+networks:
+  crypto-network:
+    driver: bridge
