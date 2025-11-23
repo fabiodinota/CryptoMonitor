@@ -6,6 +6,7 @@
 * Klasgroep: INF202B
 * Onderwerp: Cryptocurrency * - * Exchange 1 - * UserReview
 
+````mermaid
 classDiagram
 class Cryptocurrency {
 +int Id
@@ -49,3 +50,4 @@ MemeCoin
 Cryptocurrency "0..*" -- "0..*" Exchange : IsListedOn
 Exchange "1" -- "0..*" UserReview : Has
 Cryptocurrency ..> CryptoType : Uses
+````
