@@ -6,7 +6,59 @@
 * Klasgroep: INF202B
 * Onderwerp: Cryptocurrency * - * Exchange 1 - * UserReview
 
-### Beide zoekcriteria ingevuld
+## Sprint 2
+
+```mermaid
+
+classDiagram
+class Cryptocurrency {
++int Id
++string Name
++string Symbol
++double CurrentPrice
++CryptoType Type
++long? MaxSupply
++List~Exchange~ Exchanges
++ToString() string
+}
+
+class Exchange {
++int Id
++string Name
++string Website
++int TrustScore
++List~Cryptocurrency~ Cryptocurrencies
++List~UserReview~ Reviews
++ToString() string
+}
+
+class UserReview {
++int Id
++string UserName
++string Comment
++double Rating
++DateTime DatePosted
++Exchange Exchange
++ToString() string
+}
+
+class CryptoType {
+<<enumeration>>
+Coin
+Token
+Stablecoin
+MemeCoin
+}
+
+Cryptocurrency "0..*" -- "0..*" Exchange : IsListedOn
+Exchange "1" -- "0..*" UserReview : Has
+Cryptocurrency ..> CryptoType : Uses
+```
+
+
+## Sprint 3
+
+### Beide zoektermen ingevuld
 
 Zoekterm: "bin", Minimale score: 5
 
@@ -53,48 +105,47 @@ SELECT "e"."Id", "e"."Name", "e"."TrustScore", "e"."Website"
 FROM "Exchanges" AS "e"
 ```
 
-````mermaid
+
+## Sprint 4
+
+```mermaid
 classDiagram
-class Cryptocurrency {
-+int Id
-+string Name
-+string Symbol
-+double CurrentPrice
-+CryptoType Type
-+long? MaxSupply
-+List~Exchange~ Exchanges
-+ToString() string
-}
+    class Cryptocurrency {
+        +int Id
+        +string Name
+        +string Symbol
+        +double CurrentPrice
+        +CryptoType Type
+        +long? MaxSupply
+        +List~ExchangeListing~ Listings
+    }
 
-class Exchange {
-+int Id
-+string Name
-+string Website
-+int TrustScore
-+List~Cryptocurrency~ Cryptocurrencies
-+List~UserReview~ Reviews
-+ToString() string
-}
+    class Exchange {
+        +int Id
+        +string Name
+        +string Website
+        +int TrustScore
+        +List~ExchangeListing~ Listings
+        +List~UserReview~ Reviews
+    }
 
-class UserReview {
-+int Id
-+string UserName
-+string Comment
-+double Rating
-+DateTime DatePosted
-+Exchange Exchange
-+ToString() string
-}
+    class ExchangeListing {
+        +int CryptocurrencyId
+        +int ExchangeId
+        +DateTime ListingDate
+    }
 
-class CryptoType {
-<<enumeration>>
-Coin
-Token
-Stablecoin
-MemeCoin
-}
+    class UserReview {
+        +int Id
+        +string UserName
+        +string Comment
+        +double Rating
+        +DateTime DatePosted
+        +int ExchangeId
+    }
 
-Cryptocurrency "0..*" -- "0..*" Exchange : IsListedOn
-Exchange "1" -- "0..*" UserReview : Has
-Cryptocurrency ..> CryptoType : Uses
-````
+%% Relaties
+    Cryptocurrency "1" -- "0..*" ExchangeListing : Has
+    Exchange "1" -- "0..*" ExchangeListing : Lists
+    Exchange "1" -- "0..*" UserReview : Receives
+```

@@ -27,6 +27,27 @@ namespace CryptoMonitor.DAL.EF
                     .LogTo(message => Debug.WriteLine(message), LogLevel.Information); 
             }
         }
+        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ExchangeListing>()
+                .HasKey(el => new { el.CryptocurrencyId, el.ExchangeId });
+
+            modelBuilder.Entity<ExchangeListing>()
+                .HasOne(el => el.Cryptocurrency)
+                .WithMany(c => c.Listings)
+                .HasForeignKey(el => el.CryptocurrencyId);
+
+            modelBuilder.Entity<ExchangeListing>()
+                .HasOne(el => el.Exchange)
+                .WithMany(e => e.Listings)
+                .HasForeignKey(el => el.ExchangeId);
+
+            modelBuilder.Entity<UserReview>()
+                .HasOne(r => r.Exchange)
+                .WithMany(e => e.Reviews)
+                .IsRequired();
+        }
 
         public bool CreateDatabase(bool dropDatabase)
         {

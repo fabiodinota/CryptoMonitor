@@ -31,14 +31,19 @@ public static class DataSeeder
         binance.Reviews.Add(rev1);
         coinbase.Reviews.Add(rev2);
 
-        btc.Exchanges.Add(binance);
-        btc.Exchanges.Add(coinbase);
-        btc.Exchanges.Add(kraken);
+        var listings = new List<ExchangeListing>
+        {
+            new ExchangeListing { Cryptocurrency = btc, Exchange = binance, ListingDate = DateTime.Now.AddYears(-5) },
+            new ExchangeListing { Cryptocurrency = btc, Exchange = coinbase, ListingDate = DateTime.Now.AddYears(-4) },
+            new ExchangeListing { Cryptocurrency = btc, Exchange = kraken, ListingDate = DateTime.Now.AddYears(-4) },
+    
+            new ExchangeListing { Cryptocurrency = pepe, Exchange = binance, ListingDate = DateTime.Now.AddMonths(-2) },
+            new ExchangeListing { Cryptocurrency = pepe, Exchange = shadyDex, ListingDate = DateTime.Now.AddMonths(-6) },
+    
+            new ExchangeListing { Cryptocurrency = eth, Exchange = coinbase, ListingDate = DateTime.Now.AddYears(-3) }
+        };
 
-        pepe.Exchanges.Add(binance);
-        pepe.Exchanges.Add(shadyDex);
-
-        eth.Exchanges.Add(coinbase);
+        context.AddRange(listings);
         
         context.Exchanges.AddRange(binance, coinbase, kraken, shadyDex);
         context.Cryptocurrencies.AddRange(btc, eth, usdt, pepe);

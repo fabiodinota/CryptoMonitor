@@ -7,27 +7,13 @@ namespace CryptoMonitor.Domain
     public class Cryptocurrency : IValidatableObject
     {
         public int Id { get; set; }
-        
-        [Required]
-        [MaxLength(50)]
-        public string Name { get; set; }
-        
-        [Required]
-        [MaxLength(10)]
-        public string Symbol { get; set; }
-        
-        [Required]
-        public double CurrentPrice { get; set; }
-        
-        [Required]
-        public CryptoType Type { get; set; }
-        
-        [Required]
+        [Required, MaxLength(50)] public string Name { get; set; }
+        [Required, MaxLength(10)] public string Symbol { get; set; }
+        [Required] public double CurrentPrice { get; set; }
+        [Required] public CryptoType Type { get; set; }
         public long? MaxSupply { get; set; }
-
-        // nav props (*-*)
-        [NotMapped]
-        public List<Exchange> Exchanges { get; set; } = new List<Exchange>();
+        
+        public List<ExchangeListing> Listings { get; set; } = new List<ExchangeListing>();
         
         public IEnumerable<ValidationResult> Validate (ValidationContext validationContext)
         {

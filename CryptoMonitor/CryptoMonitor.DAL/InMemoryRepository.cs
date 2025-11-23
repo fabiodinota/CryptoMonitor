@@ -37,16 +37,7 @@ namespace CryptoMonitor.DAL
             // Link reviews to exchanges
             binance.Reviews.Add(rev1);
             coinbase.Reviews.Add(rev2);
-
-            // Link cryptos and exchanges
-            btc.Exchanges.Add(binance); binance.Cryptocurrencies.Add(btc);
-            btc.Exchanges.Add(coinbase); coinbase.Cryptocurrencies.Add(btc);
-            btc.Exchanges.Add(kraken); kraken.Cryptocurrencies.Add(btc);
-
-            pepe.Exchanges.Add(binance); binance.Cryptocurrencies.Add(pepe);
-            pepe.Exchanges.Add(shadyDex); shadyDex.Cryptocurrencies.Add(pepe);
-
-            eth.Exchanges.Add(coinbase); coinbase.Cryptocurrencies.Add(eth);
+          
         }
 
         public void CreateCryptocurrency(Cryptocurrency cryptocurrency)
@@ -71,10 +62,6 @@ namespace CryptoMonitor.DAL
             if (type.HasValue)
             {
                 query = query.Where(c => c.Type == type.Value);
-            }
-            if (exchange != null)
-            {
-                query = query.Where(c => c.Exchanges.Contains(exchange));
             }
             return query.ToList();
         }
