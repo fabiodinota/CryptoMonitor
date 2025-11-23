@@ -24,7 +24,7 @@ Zoekterm: "bin", Minimale score: (leeg)
 
 **SQL**
 
-```
+```sql
 SELECT "e"."Id", "e"."Name", "e"."TrustScore", "e"."Website"
 FROM "Exchanges" AS "e"
 WHERE instr(lower("e"."Name"), lower(@__namePart_0)) > 0
@@ -36,7 +36,7 @@ Zoekterm: (leeg), Minimale score: 8
 
 **SQL**
 
-```
+```sql
 SELECT "e"."Id", "e"."Name", "e"."TrustScore", "e"."Website"
 FROM "Exchanges" AS "e"
 WHERE "e"."TrustScore" >= @__minTrustScore_0
@@ -48,7 +48,7 @@ Zoekterm: (leeg), Minimale score: (leeg)
 
 **SQL**
 
-```
+```sql
 SELECT "e"."Id", "e"."Name", "e"."TrustScore", "e"."Website"
 FROM "Exchanges" AS "e"
 ```
