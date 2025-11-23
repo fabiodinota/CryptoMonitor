@@ -10,6 +10,8 @@ namespace CryptoMonitor.Domain
         
         public Exchange Exchange { get; set; }
 
+        public UserReview() { }
+
         public UserReview(int id, string userName, string comment, Exchange exchange)
         {
             Id = id;

@@ -1,19 +1,33 @@
 ﻿using CryptoMonitor.BL;
 using CryptoMonitor.Domain;
+using CryptoMonitor.DAL;
 
 namespace CryptoMonitor.UI.CA
 {
     class Program
     {
-        // comp root
-        private static CryptoManager _manager = new CryptoManager();
+        private readonly IManager _manager;
+
+        public Program(IManager manager)
+        {
+            _manager = manager;
+        }
 
         static void Main(string[] args)
         {
-            // Seed the data
-            _manager.Seed();
-            Console.WriteLine("Data Seeded.");
+            // Initialize repository and manager
+            IRepository repository = new InMemoryRepository();
+            IManager manager = new CryptoManager(repository);
 
+            // Seed the data
+            InMemoryRepository.Seed();
+            
+            Program program = new Program(manager);
+            program.Run();
+        }
+
+        public void Run()
+        {
             bool running = true;
             while (running)
             {
@@ -30,7 +44,7 @@ namespace CryptoMonitor.UI.CA
                         ShowAllCryptos();
                         break;
                     case "2":
-                        ShowCryptosByGenre();
+                        ShowCryptosByType();
                         break;
                     case "3":
                         ShowAllExchanges();
@@ -38,12 +52,21 @@ namespace CryptoMonitor.UI.CA
                     case "4":
                         ShowExchangesFiltered();
                         break;
+                    case "5":
+                        AddCryptocurrency();
+                        break;
+                    case "6":
+                        AddExchange();
+                        break;
+                    case "7":
+                        AddUserReview();
+                        break;
                     default:
-                        Console.WriteLine("Invalid choice.");
+                        Console.WriteLine("Invalid choice. Please try again.");
                         break;
                 }
-                
-                if(running) 
+
+                if (running)
                 {
                     Console.WriteLine("\nPress ENTER to continue...");
                     Console.ReadLine();
@@ -51,91 +74,202 @@ namespace CryptoMonitor.UI.CA
             }
         }
 
-        private static void ShowMenu()
+        private void ShowAllCryptos()
         {
-            Console.Clear();
-            Console.WriteLine("Crypto Monitor - Sprint 1");
-            Console.WriteLine("=========================");
-            Console.WriteLine("0) Quit");
-            Console.WriteLine("1) Show all Cryptos");
-            Console.WriteLine("2) Show Cryptos by Type (Mandatory)");
-            Console.WriteLine("3) Show all Exchanges");
-            Console.WriteLine("4) Show Exchanges with Name and/or Min Trust (Optional)");
-            Console.Write("Choice: ");
-        }
-
-        private static void ShowAllCryptos()
-        {
-            foreach (var c in _manager.GetAllCryptos())
+            var cryptos = _manager.GetAllCryptocurrencies();
+            foreach (var crypto in cryptos)
             {
-                Console.WriteLine(c.ToString());
+                Console.WriteLine(crypto);
             }
         }
 
-        private static void ShowCryptosByGenre()
+        private void ShowCryptosByType()
         {
-            Console.WriteLine("Select Type:");
-            foreach (var typeName in Enum.GetNames(typeof(CryptoType)))
+            Console.Write("Enter Crypto Type (Coin, Token, Stablecoin, MemeCoin): ");
+            string typeStr = Console.ReadLine();
+            if (Enum.TryParse<CryptoType>(typeStr, true, out var type))
             {
-                Console.WriteLine($"- {typeName}");
-            }
-            
-            Console.Write("Enter Type: ");
-            string input = Console.ReadLine();
-
-            if (Enum.TryParse(input, true, out CryptoType selectedType))
-            {
-                var results = _manager.GetCryptosByType(selectedType);
-                Console.WriteLine($"\nResults for {selectedType}:");
-                foreach (var c in results)
+                var cryptos = _manager.GetCryptocurrenciesFiltered(type, null);
+                foreach (var crypto in cryptos)
                 {
-                    Console.WriteLine(c.ToString());
+                    Console.WriteLine(crypto);
                 }
             }
             else
             {
-                Console.WriteLine("Invalid Type.");
+                Console.WriteLine("Invalid crypto type.");
             }
         }
 
-        private static void ShowAllExchanges()
+        private void ShowAllExchanges()
         {
-            foreach (var e in _manager.GetAllExchanges())
+            var exchanges = _manager.GetAllExchanges();
+            foreach (var exchange in exchanges)
             {
-                Console.WriteLine(e.ToString());
-                // Show nested reviews just to prove relations work
-                foreach(var r in e.Reviews)
+                Console.WriteLine(exchange);
+            }
+        }
+
+        private void ShowExchangesFiltered()
+        {
+            Console.Write("Enter part of the exchange name (or leave blank): ");
+            string namePart = Console.ReadLine();
+
+            Console.Write("Enter minimum trust score (or leave blank): ");
+            string scoreStr = Console.ReadLine();
+            int? minTrustScore = null;
+            if (int.TryParse(scoreStr, out var score))
+            {
+                minTrustScore = score;
+            }
+
+            var exchanges = _manager.GetExchangesFiltered(namePart, minTrustScore);
+            foreach (var exchange in exchanges)
+            {
+                Console.WriteLine(exchange);
+            }
+        }
+
+        private void AddCryptocurrency()
+        {
+            Console.Write("Enter Crypto Name: ");
+            string name = Console.ReadLine();
+
+            Console.Write("Enter Crypto Symbol: ");
+            string symbol = Console.ReadLine();
+
+            Console.Write("Enter Current Price: ");
+            double.TryParse(Console.ReadLine(), out double price);
+
+            Console.WriteLine("Available Crypto Types:");
+            foreach (var typeName in Enum.GetNames(typeof(CryptoType)))
+            {
+                Console.WriteLine(typeName);
+            }
+            Console.Write("Enter Crypto Type: ");
+            Enum.TryParse<CryptoType>(Console.ReadLine(), true, out var type);
+
+            Console.Write("Enter Max Supply (or leave blank): ");
+            long? maxSupply = null;
+            if (long.TryParse(Console.ReadLine(), out var supply))
+            {
+                maxSupply = supply;
+            }
+
+            var allExchanges = _manager.GetAllExchanges().ToList();
+            var selectedExchanges = new List<Exchange>();
+            Console.WriteLine("Available Exchanges:");
+            for (int i = 0; i < allExchanges.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}) {allExchanges[i].Name}");
+            }
+            Console.Write("Enter comma-separated numbers of exchanges to link: ");
+            var exchangeChoices = Console.ReadLine().Split(',');
+            foreach (var choice in exchangeChoices)
+            {
+                if (int.TryParse(choice.Trim(), out int index) && index > 0 && index <= allExchanges.Count)
                 {
-                    Console.WriteLine($"  -> Review: {r.Rating}/5: {r.Comment}");
+                    selectedExchanges.Add(allExchanges[index - 1]);
                 }
             }
+
+            _manager.AddCryptocurrency(name, symbol, price, type, maxSupply, selectedExchanges);
+            Console.WriteLine("Cryptocurrency added successfully!");
         }
 
-        private static void ShowExchangesFiltered()
+        private void AddExchange()
         {
-            Console.WriteLine("Optional filters (leave blank to skip):");
-            
-            Console.Write("Enter (part of) Name: ");
-            string nameInput = Console.ReadLine();
+            Console.Write("Enter Exchange Name: ");
+            string name = Console.ReadLine();
 
-            Console.Write("Enter Minimum Trust Score (1-10): ");
-            string scoreInput = Console.ReadLine();
-            int? score = null;
-            if (int.TryParse(scoreInput, out int parsedScore))
+            Console.Write("Enter Exchange Website: ");
+            string website = Console.ReadLine();
+
+            Console.Write("Enter Trust Score: ");
+            int trustScore = int.Parse(Console.ReadLine());
+
+            var allCryptocurrencies = _manager.GetAllCryptocurrencies().ToList();
+            var selectedCryptocurrencies = new List<Cryptocurrency>();
+            Console.WriteLine("Available Cryptocurrencies:");
+            for (int i = 0; i < allCryptocurrencies.Count; i++)
             {
-                score = parsedScore;
+                Console.WriteLine($"{i + 1}) {allCryptocurrencies[i].Name}");
+        }
+            Console.Write("Enter comma-separated numbers of cryptocurrencies to link: ");
+            var cryptoChoices = Console.ReadLine().Split(',');
+            foreach (var choice in cryptoChoices)
+            {
+                if (int.TryParse(choice.Trim(), out int index) && index > 0 && index <= allCryptocurrencies.Count)
+                {
+                    selectedCryptocurrencies.Add(allCryptocurrencies[index - 1]);
+                }
+            }
+            
+            _manager.AddExchange(name, website, trustScore, selectedCryptocurrencies);
+            Console.WriteLine("Exchange added successfully!");
+
+            }
+        
+        private void AddUserReview()
+        {
+            Console.WriteLine("--- Add New Review ---");
+    
+            // 1. Get Review Details
+            Console.Write("Enter User Name: ");
+            string userName = Console.ReadLine();
+
+            Console.Write("Enter Comment: ");
+            string comment = Console.ReadLine();
+
+            Console.Write("Enter Rating (0-5): ");
+            if (!double.TryParse(Console.ReadLine(), out double rating))
+            {
+                rating = 0;
             }
 
-            var results = _manager.GetExchangesFiltered(nameInput, score);
-            
-            Console.WriteLine("\nFiltered Exchanges:");
-            bool found = false;
-            foreach (var e in results)
+            var allExchanges = _manager.GetAllExchanges().ToList();
+            if (allExchanges.Count == 0)
             {
-                Console.WriteLine(e.ToString());
-                found = true;
+                Console.WriteLine("No exchanges available to review. Create an exchange first.");
+                return;
             }
-            if (!found) Console.WriteLine("No exchanges match your criteria.");
+
+            Console.WriteLine("\nSelect an Exchange to review:");
+            for (int i = 0; i < allExchanges.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}) {allExchanges[i].Name}");
+            }
+
+            Console.Write("Enter number: ");
+            string choiceStr = Console.ReadLine();
+
+            if (int.TryParse(choiceStr, out int index) && index > 0 && index <= allExchanges.Count)
+            {
+                var selectedExchange = allExchanges[index - 1];
+
+                _manager.AddUserReview(userName, comment, rating, selectedExchange);
+                Console.WriteLine("Review added successfully!");
+            }
+            else
+            {
+                Console.WriteLine("Invalid exchange selection.");
+            }
+        }
+
+        private static void ShowMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("Crypto Monitor");
+            Console.WriteLine("=========================");
+            Console.WriteLine("0) Quit");
+            Console.WriteLine("1) Show all Cryptos");
+            Console.WriteLine("2) Show Cryptos by Type");
+            Console.WriteLine("3) Show all Exchanges");
+            Console.WriteLine("4) Show Exchanges with Name and/or Min Trust");
+            Console.WriteLine("5) Add Crypto");
+            Console.WriteLine("6) Add Exchange");
+            Console.WriteLine("7) Add User Review");
+            Console.Write("Choice (0 - 7): ");
         }
     }
 }
