@@ -15,7 +15,9 @@ public interface IRepository
     IEnumerable<Exchange> ReadExchangesFiltered(string namePart, int? minTrustScore);
     
     IEnumerable<Cryptocurrency> ReadAllCryptocurrenciesWithExchanges();
+    Cryptocurrency ReadCryptocurrencyWithExchanges(int id);
     IEnumerable<Exchange> ReadAllExchangesWithCryptocurrenciesAndReviews();
+    Exchange ReadExchangeWithCryptocurrenciesAndReviews(int id);
     
     void CreateCryptocurrency(Cryptocurrency cryptocurrency);
     void CreateExchange(Exchange exchange);

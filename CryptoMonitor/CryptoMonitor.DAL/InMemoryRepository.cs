@@ -100,12 +100,23 @@ namespace CryptoMonitor.DAL
         {
             throw new NotImplementedException();
         }
+        
+        public Cryptocurrency ReadCryptocurrencyWithExchanges(int id)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public IEnumerable<Exchange> ReadAllExchangesWithCryptocurrenciesAndReviews()
         {
             throw new NotImplementedException();
         }
 
+        public Exchange ReadExchangeWithCryptocurrenciesAndReviews(int id)
+        {
+            throw new NotImplementedException();
+        }
+        
         public void AddListing(ExchangeListing listing)
         {
             throw new NotImplementedException();

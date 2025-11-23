@@ -1,0 +1,82 @@
+@using CryptoMonitor.Domain
+@model IEnumerable<Exchange>
+
+@{
+    ViewData["Title"] = "All Exchanges";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-4">Exchanges</h1>
+            <p class="text-muted">Overview of all tracked exchanges.</p>
+        </div>
+        <a asp-action="Add" class="btn btn-primary btn-lg">
+            <i class="bi bi-plus-lg"></i> Add Exchange
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            No exchanges found in the database. 
+            <a asp-action="Add" class="alert-link">Add the first one!</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Website</th>
+                        <th>Trust Score</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var exchange in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">
+                                @exchange.Name
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(exchange.Website))
+                                {
+                                    <a href="https://@exchange.Website" target="_blank" class="text-decoration-none">
+                                        @exchange.Website <i class="bi bi-box-arrow-up-right small"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Unknown</span>
+                                }
+                            </td>
+                            <td>
+                                @if (exchange.TrustScore >= 8)
+                                {
+                                    <span class="badge bg-success">@exchange.TrustScore / 10</span>
+                                }
+                                else if (exchange.TrustScore >= 5)
+                                {
+                                    <span class="badge bg-warning text-dark">@exchange.TrustScore / 10</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">@exchange.TrustScore / 10</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@exchange.Id" class="btn btn-outline-primary btn-sm">
+                                    Details
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

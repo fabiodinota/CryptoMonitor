@@ -15,7 +15,9 @@ public interface IManager
     IEnumerable<Exchange> GetExchangesFiltered(string namePart, int? minTrustScore);
     
     IEnumerable<Cryptocurrency> GetAllCryptocurrenciesWithExchanges();
+    Cryptocurrency GetCryptocurrencyWithExchanges(int id);
     IEnumerable<Exchange> GetAllExchangesWithDetails();
+    Exchange GetExchangeWithDetails(int id);
     
     void AddCryptocurrency(
         string name, 

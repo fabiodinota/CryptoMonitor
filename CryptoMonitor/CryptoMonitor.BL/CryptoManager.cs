@@ -50,9 +50,19 @@ namespace CryptoMonitor.BL
             return _repository.ReadAllCryptocurrenciesWithExchanges();
         }
 
+        public Cryptocurrency GetCryptocurrencyWithExchanges(int id)
+        {
+            return _repository.ReadCryptocurrencyWithExchanges(id);
+        }
+
         public IEnumerable<Exchange> GetAllExchangesWithDetails()
         {
             return _repository.ReadAllExchangesWithCryptocurrenciesAndReviews();
+        }
+        
+        public Exchange GetExchangeWithDetails(int id)
+        {
+            return _repository.ReadExchangeWithCryptocurrenciesAndReviews(id);
         }
 
         public void AddCryptocurrency(string name, string symbol, double currentPrice, CryptoType type, long? maxSupply,

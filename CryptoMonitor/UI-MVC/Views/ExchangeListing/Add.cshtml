@@ -1,0 +1,47 @@
+@model CryptoMonitor.UI.MVC.Models.AddExchangeListingViewModel
+
+@{
+    ViewData["Title"] = "Add Listing";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Add New Listing</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Add" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="SelectedCryptoId" class="form-label fw-bold"></label>
+                            <select asp-for="SelectedCryptoId" asp-items="Model.Cryptos" class="form-select">
+                                <option value="">-- Select Cryptocurrency --</option>
+                            </select>
+                            <span asp-validation-for="SelectedCryptoId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SelectedExchangeId" class="form-label fw-bold"></label>
+                            <select asp-for="SelectedExchangeId" asp-items="Model.Exchanges" class="form-select">
+                                <option value="">-- Select Exchange --</option>
+                            </select>
+                            <span asp-validation-for="SelectedExchangeId" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success">Add Listing</button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

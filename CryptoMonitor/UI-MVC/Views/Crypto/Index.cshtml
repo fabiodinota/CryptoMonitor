@@ -1,0 +1,89 @@
+@using CryptoMonitor.Domain
+@model IEnumerable<Cryptocurrency>
+
+@{
+    ViewData["Title"] = "All Cryptocurrencies";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-4">All Cryptocurrencies</h1>
+            <p class="text-muted">Overview of all tracked assets.</p>
+        </div>
+        <a asp-action="Add" class="btn btn-primary btn-lg">
+            <i class="bi bi-plus-lg"></i> Add cryptocurrency
+        </a>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning">
+        No cryptocurrencies found. Please seed the database.
+    </div>
+}
+else
+{ 
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th>Symbol</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Price</th>
+                <th>Max Supply</th>
+                <th>More Info</th>
+            </tr>
+            </thead>
+            <tbody>
+            @* 3. Iterate through the list *@
+            @foreach (var crypto in Model)
+            {
+                <tr>
+                    <td class="font-weight-bold">$@crypto.Symbol</td>
+                    <td>@crypto.Name</td>
+                    <td>
+                        <span class="badge bg-info text-dark">@crypto.Type</span>
+                    </td>
+                    <td>€ @crypto.CurrentPrice.ToString("N2")</td>
+                    <td>
+                        @if (crypto.MaxSupply.HasValue)
+                        {
+                            @(crypto.MaxSupply.HasValue ? crypto.MaxSupply.Value.ToString("N0") : "Infinite")
+                        }
+                        else
+                        {
+                            <p>Unknown</p>
+                        }
+                    </td>
+                    <td>
+                        <a style="color: #0a53be;" asp-area="" asp-controller="Crypto" asp-action="Details" asp-route-id="@crypto.Id">
+                            Details
+                        </a>
+                        @*$1$ Display related Exchanges (Eager Loaded) #1#
+                            @if (crypto.Listings != null && crypto.Listings.Any())
+                            {
+                                <ul class="list-unstyled mb-0">
+                                    @foreach (var listing in crypto.Listings)
+                                    {
+                                        // Check for null to be safe
+                                        if (listing.Exchange != null)
+                                        {
+                                            <li><small>@listing.Exchange.Name</small></li>
+                                        }
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <span class="text-muted font-italic">None</span>
+                            }*@
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

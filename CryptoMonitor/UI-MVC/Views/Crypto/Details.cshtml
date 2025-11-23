@@ -1,0 +1,115 @@
+@using CryptoMonitor.Domain
+@model Cryptocurrency
+
+@{
+    ViewData["Title"] = $"{Model.Name} (${Model.Symbol}) - Details";
+}
+
+
+<div class="text-center">
+    <h1 class="display-3">@Model.Name ($@Model.Symbol) - Details</h1>
+    <p>Overview of the selected asset.</p>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            Basis Informatie
+        </div>
+        <div class="card-body-detail">
+            <dl style="display: flex">
+                <div style="width: 100%">
+                    <dt>Naam</dt>
+                    <dd>@Model.Name</dd>
+                </div>
+                <div style="width: 100%">          
+                    <dt>Symbool</dt>
+                    <dd>@Model.Symbol</dd>
+                </div>
+                <div style="width: 100%">   
+                    <dt>Huidige Prijs</dt>
+                    <dd>€ @Model.CurrentPrice.ToString("N2")</dd>
+                </div>
+                <div style="width: 100%">
+                    <dt>Type</dt>
+                    <dd>@Model.Type</dd>
+                </div>
+                <div style="width: 100%">      
+                    <dt>Max Supply</dt>
+                    <dd>
+                        @if (Model.MaxSupply.HasValue)
+                        {
+                            @Model.MaxSupply.Value.ToString("N0")
+                        }
+                        else
+                        {
+                            <span class="text-muted font-italic">Unknown (Oneindig)</span>
+                        }
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            Beschikbaar op Exchanges
+        </div>
+        <div class="card-body">
+            @if (Model.Listings != null && Model.Listings.Any())
+            {
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Exchange Naam</th> 
+                            <th>Website</th>       
+                            <th>Datum Toegevoegd</th> 
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var listing in Model.Listings)
+                        {
+                            <tr>
+                                <td>
+                                    @if (listing.Exchange != null)
+                                    {
+                                        @listing.Exchange.Name
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">Exchange data missing</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (listing.Exchange != null && !string.IsNullOrEmpty(listing.Exchange.Website))
+                                    {
+                                        <a href="https://@listing.Exchange.Website" target="_blank">@listing.Exchange.Website</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Unknown</span>
+                                    }
+                                </td>
+                                <td>
+                                    @listing.ListingDate.ToString("dd/MM/yyyy")
+                                </td>
+                                <td>
+                                    <a asp-area="" asp-controller="Exchange" asp-action="Details" asp-route-id="@listing.Exchange.Id">
+                                        Details
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted">This cryptocurrency is not listed on any exchanges.</p>
+            }
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-action="Index" class="btn btn-secondary">Terug naar overzicht</a>
+    </div>
+</div>

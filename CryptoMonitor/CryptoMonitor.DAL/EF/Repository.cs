@@ -39,6 +39,14 @@ public class Repository : IRepository
             .AsEnumerable();
     }
 
+    public Cryptocurrency ReadCryptocurrencyWithExchanges(int id)
+    {
+        return _context.Cryptocurrencies
+            .Include(c => c.Listings)
+            .ThenInclude(l => l.Exchange)
+            .FirstOrDefault(e => e.Id == id);
+    }
+
     public IEnumerable<Exchange> ReadAllExchangesWithCryptocurrenciesAndReviews()
     {
         return _context.Exchanges
@@ -46,6 +54,15 @@ public class Repository : IRepository
             .ThenInclude(l => l.Cryptocurrency)
             .Include(e => e.Reviews) 
             .AsEnumerable();
+    }
+    
+    public Exchange ReadExchangeWithCryptocurrenciesAndReviews(int id)
+    {
+        return _context.Exchanges
+            .Include(e => e.Listings)
+            .ThenInclude(l => l.Cryptocurrency) // Laad de crypto info
+            .Include(e => e.Reviews)                // Laad de reviews
+            .FirstOrDefault(e => e.Id == id);
     }
 
     public void CreateCryptocurrency(Cryptocurrency cryptocurrency)

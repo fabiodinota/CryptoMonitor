@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoMonitor.BL", "CryptoM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoMonitor.UI.CA", "CryptoMonitor.UI.CA\CryptoMonitor.UI.CA.csproj", "{700C3335-6526-4FA9-8B7F-62F52320C68E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI-MVC", "UI-MVC\UI-MVC.csproj", "{4C4DFFAB-C615-48DF-8A53-655D1B54CDFA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,18 @@ Global
 		{700C3335-6526-4FA9-8B7F-62F52320C68E}.Release|x64.Build.0 = Release|Any CPU
 		{700C3335-6526-4FA9-8B7F-62F52320C68E}.Release|x86.ActiveCfg = Release|Any CPU
 		{700C3335-6526-4FA9-8B7F-62F52320C68E}.Release|x86.Build.0 = Release|Any CPU
+		{4C4DFFAB-C615-48DF-8A53-655D1B54CDFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C4DFFAB-C615-48DF-8A53-655D1B54CDFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C4DFFAB-C615-48DF-8A53-655D1B54CDFA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4C4DFFAB-C615-48DF-8A53-655D1B54CDFA}.Debug|x64.Build.0 = Debug|Any CPU
+		{4C4DFFAB-C615-48DF-8A53-655D1B54CDFA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4C4DFFAB-C615-48DF-8A53-655D1B54CDFA}.Debug|x86.Build.0 = Debug|Any CPU
+		{4C4DFFAB-C615-48DF-8A53-655D1B54CDFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C4DFFAB-C615-48DF-8A53-655D1B54CDFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C4DFFAB-C615-48DF-8A53-655D1B54CDFA}.Release|x64.ActiveCfg = Release|Any CPU
+		{4C4DFFAB-C615-48DF-8A53-655D1B54CDFA}.Release|x64.Build.0 = Release|Any CPU
+		{4C4DFFAB-C615-48DF-8A53-655D1B54CDFA}.Release|x86.ActiveCfg = Release|Any CPU
+		{4C4DFFAB-C615-48DF-8A53-655D1B54CDFA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
