@@ -15,8 +15,6 @@ namespace CryptoMonitor.BL
             _repository = repositoryProp;
         }
 
-        // --- READ ---
-
         public Cryptocurrency GetCryptocurrency(int id)
         {
             return _repository.ReadCryptocurrency(id);
@@ -45,6 +43,16 @@ namespace CryptoMonitor.BL
         public IEnumerable<Exchange> GetExchangesFiltered(string namePart, int? minTrustScore)
         {
             return _repository.ReadExchangesFiltered(namePart, minTrustScore);
+        }
+        
+        public IEnumerable<Cryptocurrency> GetAllCryptocurrenciesWithExchanges()
+        {
+            return _repository.ReadAllCryptocurrenciesWithExchanges();
+        }
+
+        public IEnumerable<Exchange> GetAllExchangesWithDetails()
+        {
+            return _repository.ReadAllExchangesWithCryptocurrenciesAndReviews();
         }
 
         public void AddCryptocurrency(string name, string symbol, double currentPrice, CryptoType type, long? maxSupply,
@@ -133,6 +141,27 @@ namespace CryptoMonitor.BL
                 
                 Console.WriteLine("User Review added successfully!");
             }
+        }
+        
+        public void AddListing(int exchangeId, int cryptoId)
+        {
+            var exchange = _repository.ReadExchange(exchangeId);
+
+            var listing = new ExchangeListing
+            {
+                ExchangeId = exchangeId,
+                CryptocurrencyId = cryptoId,
+                ListingDate = DateTime.Now
+            };
+
+            _repository.AddListing(listing);
+            Console.WriteLine("Listing succesfully added!");
+        }
+
+        public void RemoveListing(int exchangeId, int cryptoId)
+        {
+            _repository.RemoveListing(exchangeId, cryptoId);
+            Console.WriteLine("Listing succesfully removed!");
         }
         
         private static bool ValidateByTryValidateObject(object obj)

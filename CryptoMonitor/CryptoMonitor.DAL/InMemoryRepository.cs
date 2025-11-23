@@ -96,6 +96,27 @@ namespace CryptoMonitor.DAL
             return query.ToList();
         }
         
+        public IEnumerable<Cryptocurrency> ReadAllCryptocurrenciesWithExchanges()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Exchange> ReadAllExchangesWithCryptocurrenciesAndReviews()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddListing(ExchangeListing listing)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public void RemoveListing(int exchangeId, int cryptoId)
+        {
+            throw new NotImplementedException();
+        }
+
+
         public void CreateUserReview(UserReview review)
         {
             // Simulate auto-increment ID

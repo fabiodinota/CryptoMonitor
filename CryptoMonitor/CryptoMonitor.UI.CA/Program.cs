@@ -84,6 +84,12 @@ namespace CryptoMonitor.UI.CA
                     case "7":
                         AddUserReview();
                         break;
+                    case "8": 
+                        AddCryptoToExchange(); 
+                        break;
+                    case "9": 
+                        RemoveCryptoFromExchange(); 
+                        break;
                     default:
                         Console.WriteLine("Invalid choice. Please try again.");
                         break;
@@ -99,10 +105,28 @@ namespace CryptoMonitor.UI.CA
 
         private void ShowAllCryptos()
         {
-            var cryptos = _manager.GetAllCryptocurrencies();
+            Console.WriteLine("--- All Cryptos (incl. Exchanges) ---");
+            var cryptos = _manager.GetAllCryptocurrenciesWithExchanges();
+            
             foreach (var crypto in cryptos)
             {
-                Console.WriteLine(crypto);
+                Console.WriteLine(crypto.ToString());
+                
+                if (crypto.Listings != null && crypto.Listings.Any())
+                {
+                    foreach (var listing in crypto.Listings)
+                    {
+                        if (listing.Exchange != null)
+                        {
+                            Console.WriteLine($"   -> Available at: {listing.Exchange.Name} (listed on {listing.ListingDate:F})");
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("   -> Not yet listed on an exchange.");
+                }
+                Console.WriteLine();
             }
         }
 
@@ -126,10 +150,40 @@ namespace CryptoMonitor.UI.CA
 
         private void ShowAllExchanges()
         {
-            var exchanges = _manager.GetAllExchanges();
+            Console.WriteLine("--- All Exchanges (incl. Cryptocurrencies & Reviews) ---");
+            var exchanges = _manager.GetAllExchangesWithDetails();
+
             foreach (var exchange in exchanges)
             {
-                Console.WriteLine(exchange);
+                Console.WriteLine(exchange.ToString());
+
+                Console.WriteLine("   [Cryptocurrencies]:");
+                if (exchange.Listings != null && exchange.Listings.Any())
+                {
+                    foreach (var listing in exchange.Listings)
+                    {
+                        Console.WriteLine($"     - ${listing.Cryptocurrency?.Symbol} ({listing.Cryptocurrency?.Name})");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("     - no cryptocurrencies available.");
+                }
+
+                // 2. Toon Reviews
+                Console.WriteLine("   [Reviews]:");
+                if (exchange.Reviews != null && exchange.Reviews.Any())
+                {
+                    foreach (var review in exchange.Reviews)
+                    {
+                        Console.WriteLine($"     - {review.Rating}/5 by {review.UserName}: \"{review.Comment}\"");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("     - no reviews.");
+                }
+                Console.WriteLine("-------------------------------");
             }
         }
 
@@ -234,7 +288,6 @@ namespace CryptoMonitor.UI.CA
         {
             Console.WriteLine("--- Add New Review ---");
     
-            // 1. Get Review Details
             Console.Write("Enter User Name: ");
             string userName = Console.ReadLine();
 
@@ -274,6 +327,93 @@ namespace CryptoMonitor.UI.CA
                 Console.WriteLine("Invalid exchange selection.");
             }
         }
+        
+        private void AddCryptoToExchange()
+        {
+            Console.WriteLine("--- Koppel Crypto aan Exchange ---");
+            
+            var exchanges = _manager.GetAllExchanges().ToList();
+            if (!exchanges.Any()) return;
+
+            Console.WriteLine("Selecteer een Exchange:");
+            for (int i = 0; i < exchanges.Count; i++)
+                Console.WriteLine($"[{i + 1}] {exchanges[i].Name}");
+
+            Console.Write("Keuze: ");
+            if (!int.TryParse(Console.ReadLine(), out int exIndex) || exIndex < 1 || exIndex > exchanges.Count)
+            {
+                Console.WriteLine("Ongeldige keuze.");
+                return;
+            }
+            var selectedExchange = exchanges[exIndex - 1];
+
+            var cryptos = _manager.GetAllCryptocurrencies().ToList();
+            if (!cryptos.Any()) return;
+
+            Console.WriteLine("\nSelecteer een Cryptocurrency om toe te voegen:");
+            for (int i = 0; i < cryptos.Count; i++)
+                Console.WriteLine($"[{i + 1}] {cryptos[i].Symbol} ({cryptos[i].Name})");
+
+            Console.Write("Keuze: ");
+            if (!int.TryParse(Console.ReadLine(), out int cryptoIndex) || cryptoIndex < 1 || cryptoIndex > cryptos.Count)
+            {
+                Console.WriteLine("Ongeldige keuze.");
+                return;
+            }
+            var selectedCrypto = cryptos[cryptoIndex - 1];
+
+            try 
+            {
+                _manager.AddListing(selectedExchange.Id, selectedCrypto.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fout bij toevoegen (bestaat de relatie al?): {ex.Message}");
+            }
+        }
+
+        private void RemoveCryptoFromExchange()
+        {
+            Console.WriteLine("--- Verwijder Crypto van Exchange ---");
+            
+            var exchanges = _manager.GetAllExchangesWithDetails().ToList(); 
+            if (!exchanges.Any()) return;
+
+            Console.WriteLine("Selecteer een Exchange:");
+            for (int i = 0; i < exchanges.Count; i++)
+                Console.WriteLine($"[{i + 1}] {exchanges[i].Name}");
+
+            Console.Write("Keuze: ");
+            if (!int.TryParse(Console.ReadLine(), out int exIndex) || exIndex < 1 || exIndex > exchanges.Count) return;
+            
+            var selectedExchange = exchanges[exIndex - 1];
+
+            if (selectedExchange.Listings == null || !selectedExchange.Listings.Any())
+            {
+                Console.WriteLine("Deze exchange heeft geen cryptos om te verwijderen.");
+                return;
+            }
+
+            Console.WriteLine($"\nSelecteer een Cryptocurrency om te verwijderen van {selectedExchange.Name}:");
+            var listings = selectedExchange.Listings.ToList();
+            
+            for (int i = 0; i < listings.Count; i++)
+            {
+                var symbol = listings[i].Cryptocurrency?.Symbol ?? $"ID: {listings[i].CryptocurrencyId}";
+                Console.WriteLine($"[{i + 1}] {symbol}");
+            }
+
+            Console.Write("Keuze: ");
+            if (!int.TryParse(Console.ReadLine(), out int listIndex) || listIndex < 1 || listIndex > listings.Count)
+            {
+                Console.WriteLine("Ongeldige keuze.");
+                return;
+            }
+
+            var listingToRemove = listings[listIndex - 1];
+
+            _manager.RemoveListing(listingToRemove.ExchangeId, listingToRemove.CryptocurrencyId);
+        }
 
         private static void ShowMenu()
         {
@@ -288,7 +428,9 @@ namespace CryptoMonitor.UI.CA
             Console.WriteLine("5) Add Crypto");
             Console.WriteLine("6) Add Exchange");
             Console.WriteLine("7) Add User Review");
-            Console.Write("Choice (0 - 7): ");
+            Console.WriteLine("8) Koppel Crypto aan Exchange (+)");
+            Console.WriteLine("9) Verwijder Crypto van Exchange (-)");
+            Console.Write("Choice (0 - 9): ");
         }
     }
 }
