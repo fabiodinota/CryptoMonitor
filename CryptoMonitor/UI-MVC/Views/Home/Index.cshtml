@@ -1,8 +1,90 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model UI_MVC.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    <h1 class="display-4 mb-4">CryptoMonitor Dashboard</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3 shadow-sm">
+                <div class="card-header">Total Cryptocurrencies</div>
+                <div class="card-body">
+                    <h2 class="card-title text-center"><i class="bi bi-currency-bitcoin"></i> @Model.TotalCryptos</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3 shadow-sm">
+                <div class="card-header">tracked Exchanges</div>
+                <div class="card-body">
+                    <h2 class="card-title text-center"><i class="bi bi-bank"></i> @Model.TotalExchanges</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+             <div class="card text-white bg-info mb-3 shadow-sm">
+                <div class="card-header">User Reviews</div>
+                <div class="card-body">
+                    <h2 class="card-title text-center text-white"><i class="bi bi-chat-left-text"></i> @Model.TotalReviews</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Recently Added Cryptos</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var crypto in Model.RecentCryptos)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>
+                                <strong>@crypto.Name</strong> (@crypto.Symbol)
+                            </span>
+                             <span class="badge bg-secondary rounded-pill">€@crypto.CurrentPrice.ToString("N2")</span>
+                        </li>
+                    }
+                    @if (!Model.RecentCryptos.Any())
+                    {
+                        <li class="list-group-item text-muted">No cryptocurrencies found.</li>
+                    }
+                </ul>
+                <div class="card-footer text-end">
+                    <a asp-controller="Crypto" asp-action="Index" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Latest User Reviews</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                     @foreach (var review in Model.RecentReviews)
+                    {
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">@review.Exchange?.Name</h6>
+                                <small>@review.DatePosted.ToShortDateString()</small>
+                            </div>
+                            <p class="mb-1 text-truncate">@review.Comment</p>
+                            <small class="text-muted">By @review.UserName - Rating: @review.Rating/5</small>
+                        </div>
+                    }
+                    @if (!Model.RecentReviews.Any())
+                    {
+                        <div class="list-group-item text-muted">No reviews found.</div>
+                    }
+                </div>
+                 <div class="card-footer text-end">
+                    <a asp-controller="UserReviews" asp-action="Index" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
