@@ -24,10 +24,10 @@ namespace CryptoMonitor.DAL
             _exchanges.AddRange(new[] { binance, coinbase, kraken, shadyDex });
 
             // Cryptos
-            var btc = new Cryptocurrency { Id = 1, Name = "Bitcoin", Symbol = "BTC", CurrentPrice = 28500.50, Type = CryptoType.Coin, MaxSupply = 21000000 };
-            var eth = new Cryptocurrency { Id = 2, Name = "Ethereum", Symbol = "ETH", CurrentPrice = 1800.00, Type = CryptoType.Coin, MaxSupply = null };
-            var usdt = new Cryptocurrency { Id = 3, Name = "Tether", Symbol = "USDT", CurrentPrice = 1.00, Type = CryptoType.Stablecoin, MaxSupply = null };
-            var pepe = new Cryptocurrency { Id = 4, Name = "Pepe", Symbol = "PEPE", CurrentPrice = 0.000001, Type = CryptoType.MemeCoin, MaxSupply = 420690000000000 };
+            var btc = new Cryptocurrency { Id = 1, Name = "Bitcoin", Symbol = "BTC", CurrentPrice = 28500.50m, Type = CryptoType.Coin, MaxSupply = 21000000 };
+            var eth = new Cryptocurrency { Id = 2, Name = "Ethereum", Symbol = "ETH", CurrentPrice = 1800.00m, Type = CryptoType.Coin, MaxSupply = null };
+            var usdt = new Cryptocurrency { Id = 3, Name = "Tether", Symbol = "USDT", CurrentPrice = 1.00m, Type = CryptoType.Stablecoin, MaxSupply = null };
+            var pepe = new Cryptocurrency { Id = 4, Name = "Pepe", Symbol = "PEPE", CurrentPrice = 0.000001m, Type = CryptoType.MemeCoin, MaxSupply = 420690000000000 };
             _cryptos.AddRange(new[] { btc, eth, usdt, pepe });
             
             // User reviews
@@ -37,7 +37,8 @@ namespace CryptoMonitor.DAL
             // Link reviews to exchanges
             binance.Reviews.Add(rev1);
             coinbase.Reviews.Add(rev2);
-          
+            
+            _reviews.AddRange(new[] { rev1, rev2 });
         }
 
         public void CreateCryptocurrency(Cryptocurrency cryptocurrency)
@@ -119,7 +120,21 @@ namespace CryptoMonitor.DAL
         
         public void AddListing(ExchangeListing listing)
         {
-            throw new NotImplementedException();
+            var exchange = _exchanges.FirstOrDefault(e => e.Id == listing.ExchangeId);
+            var crypto = _cryptos.FirstOrDefault(c => c.Id == listing.CryptocurrencyId);
+
+            if (exchange != null && crypto != null)
+            {
+
+                if (exchange.Listings == null) exchange.Listings = new List<ExchangeListing>();
+                if (crypto.Listings == null) crypto.Listings = new List<ExchangeListing>();
+                
+                listing.Exchange = exchange;
+                listing.Cryptocurrency = crypto;
+                
+                exchange.Listings.Add(listing);
+                crypto.Listings.Add(listing);
+            }
         }
         
         public void RemoveListing(int exchangeId, int cryptoId)
@@ -133,6 +148,11 @@ namespace CryptoMonitor.DAL
             // Simulate auto-increment ID
             review.Id = _reviews.Any() ? _reviews.Max(r => r.Id) + 1 : 1;
             _reviews.Add(review);
+        }
+
+        public IEnumerable<UserReview> ReadAllUserReviews()
+        {
+            return _reviews;
         }
         
     }

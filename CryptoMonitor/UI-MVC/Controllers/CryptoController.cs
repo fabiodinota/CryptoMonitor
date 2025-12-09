@@ -36,18 +36,16 @@ public class CryptoController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Add(AddCryptocurrencyViewModel model)
-    {
-        if (ModelState.IsValid)
+        public IActionResult Add(AddCryptocurrencyViewModel model)
         {
-            var allExchanges = _cryptoManager.GetAllExchanges();
-            var selectedExchanges = allExchanges
-                .Where(e => model.SelectedExchangeIds.Contains(e.Id))
-                .ToList();
-            
-            try
+            if (ModelState.IsValid)
             {
-                _cryptoManager.AddCryptocurrency(
+                var allExchanges = _cryptoManager.GetAllExchanges();
+                var selectedExchanges = allExchanges
+                    .Where(e => model.SelectedExchangeIds.Contains(e.Id))
+                    .ToList();
+            
+                var validationErrors = _cryptoManager.AddCryptocurrency(
                     model.Name, 
                     model.Symbol, 
                     model.CurrentPrice, 
@@ -56,17 +54,21 @@ public class CryptoController : Controller
                     selectedExchanges
                 );
 
-                return RedirectToAction("Index", "Crypto");
+                if (!validationErrors.Any())
+                {
+                    return RedirectToAction("Index", "Crypto");
+                }
+
+                foreach (var error in validationErrors)
+                {
+                    var key = error.MemberNames?.FirstOrDefault() ?? string.Empty;
+                    ModelState.AddModelError(key, error.ErrorMessage ?? "Validation failed.");
+                }
             }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Fout bij opslaan: " + ex.Message);
-            }
+            
+            model.AvailableExchanges = new SelectList(_cryptoManager.GetAllExchanges(), "Id", "Name");
+            return View(model);
         }
-        
-        model.AvailableExchanges = new SelectList(_cryptoManager.GetAllExchanges(), "Id", "Name");
-        return View(model);
-    }
     
     public IActionResult Details(int id)
     {

@@ -216,7 +216,7 @@ namespace CryptoMonitor.UI.CA
             string symbol = Console.ReadLine();
 
             Console.Write("Enter Current Price: ");
-            double.TryParse(Console.ReadLine(), out double price);
+            decimal.TryParse(Console.ReadLine(), out decimal price);
 
             Console.WriteLine("Available Crypto Types:");
             foreach (var typeName in Enum.GetNames(typeof(CryptoType)))
@@ -250,7 +250,19 @@ namespace CryptoMonitor.UI.CA
                 }
             }
 
-            _manager.AddCryptocurrency(name, symbol, price, type, maxSupply, selectedExchanges);
+            var validationErrors = _manager.AddCryptocurrency(name, symbol, price, type, maxSupply, selectedExchanges);
+            if (validationErrors.Any())
+            {
+                Console.WriteLine("Validation failed:");
+                foreach (var error in validationErrors)
+                {
+                    Console.WriteLine($"- {error.ErrorMessage}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Cryptocurrency added successfully!");
+            }
         }
 
         private void AddExchange()
@@ -262,7 +274,13 @@ namespace CryptoMonitor.UI.CA
             string website = Console.ReadLine();
 
             Console.Write("Enter Trust Score: ");
-            int trustScore = int.Parse(Console.ReadLine());
+            int trustScore;
+            string? trustInput = Console.ReadLine();
+            while (!int.TryParse(trustInput, out trustScore))
+            {
+                Console.Write("Invalid input. Enter a numeric Trust Score: ");
+                trustInput = Console.ReadLine();
+            }
 
             var allCryptocurrencies = _manager.GetAllCryptocurrencies().ToList();
             var selectedCryptocurrencies = new List<Cryptocurrency>();
@@ -281,7 +299,19 @@ namespace CryptoMonitor.UI.CA
                 }
             }
             
-            _manager.AddExchange(name, website, trustScore, selectedCryptocurrencies);
+            var validationErrors = _manager.AddExchange(name, website, trustScore, selectedCryptocurrencies);
+            if (validationErrors.Any())
+            {
+                Console.WriteLine("Validation failed:");
+                foreach (var error in validationErrors)
+                {
+                    Console.WriteLine($"- {error.ErrorMessage}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Exchange added successfully!");
+            }
         }
         
         private void AddUserReview()
@@ -295,8 +325,12 @@ namespace CryptoMonitor.UI.CA
             string comment = Console.ReadLine();
 
             Console.Write("Enter Rating (0-5): ");
-            if (int.TryParse(Console.ReadLine(), out int rating))
+
+            int rating;
+            string? ratingInput = Console.ReadLine();
+            if (!int.TryParse(ratingInput, out rating) || rating < 0 || rating> 5)
             {
+                Console.WriteLine("Invalid rating. Defaulting to 0.");
                 rating = 0;
             }
 
@@ -320,7 +354,19 @@ namespace CryptoMonitor.UI.CA
             {
                 var selectedExchange = allExchanges[index - 1];
 
-                _manager.AddUserReview(userName, comment, rating, selectedExchange);
+                var validationErrors = _manager.AddUserReview(userName, comment, rating, selectedExchange);
+                if (validationErrors.Any())
+                {
+                    Console.WriteLine("Validation failed:");
+                    foreach (var error in validationErrors)
+                    {
+                        Console.WriteLine($"- {error.ErrorMessage}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("User Review added successfully!");
+                }
             }
             else
             {
@@ -364,7 +410,7 @@ namespace CryptoMonitor.UI.CA
 
             try 
             {
-                _manager.AddListing(selectedExchange.Id, selectedCrypto.Id);
+                _manager.AddListing(selectedExchange.Id, selectedCrypto.Id, DateTime.Now);
             }
             catch (Exception ex)
             {

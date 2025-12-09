@@ -46,20 +46,22 @@ public class ExchangeController : Controller
                 .Where(c => model.SelectedCryptoIds.Contains(c.Id))
                 .ToList();
 
-            try
-            {
-                _cryptoManager.AddExchange(
-                    model.Name, 
-                    model.Website ?? "",
-                    model.TrustScore, 
-                    selectedCryptos
-                );
+            var validationErrors = _cryptoManager.AddExchange(
+                model.Name, 
+                model.Website ?? "",
+                model.TrustScore, 
+                selectedCryptos
+            );
 
+            if (!validationErrors.Any())
+            {
                 return RedirectToAction("Index", "Exchange");
             }
-            catch (Exception ex)
+
+            foreach (var error in validationErrors)
             {
-                ModelState.AddModelError("", "Fout bij opslaan: " + ex.Message);
+                var key = error.MemberNames?.FirstOrDefault() ?? string.Empty;
+                ModelState.AddModelError(key, error.ErrorMessage ?? "Validation failed.");
             }
         }
 

@@ -19,10 +19,10 @@ public static class DataSeeder
         var shadyDex = new Exchange { Id = 4, Name = "ShadyDex", TrustScore = 2, Website = "shady.io" };
 
         // Cryptos
-        var btc = new Cryptocurrency { Id = 1, Name = "Bitcoin", Symbol = "BTC", CurrentPrice = 28500.50, Type = CryptoType.Coin, MaxSupply = 21000000 };
-        var eth = new Cryptocurrency { Id = 2, Name = "Ethereum", Symbol = "ETH", CurrentPrice = 1800.00, Type = CryptoType.Coin, MaxSupply = 2 };
-        var usdt = new Cryptocurrency { Id = 3, Name = "Tether", Symbol = "USDT", CurrentPrice = 1.00, Type = CryptoType.Stablecoin, MaxSupply = 1 };
-        var pepe = new Cryptocurrency { Id = 4, Name = "Pepe", Symbol = "PEPE", CurrentPrice = 0.000001, Type = CryptoType.MemeCoin, MaxSupply = 420690000000000 };
+        var btc = new Cryptocurrency { Id = 1, Name = "Bitcoin", Symbol = "BTC", CurrentPrice = 28500.50m, Type = CryptoType.Coin, MaxSupply = 21000000 };
+        var eth = new Cryptocurrency { Id = 2, Name = "Ethereum", Symbol = "ETH", CurrentPrice = 1800.00m, Type = CryptoType.Coin, MaxSupply = 2 };
+        var usdt = new Cryptocurrency { Id = 3, Name = "Tether", Symbol = "USDT", CurrentPrice = 1.00m, Type = CryptoType.Stablecoin, MaxSupply = 1 };
+        var pepe = new Cryptocurrency { Id = 4, Name = "Pepe", Symbol = "PEPE", CurrentPrice = 0.000001m, Type = CryptoType.MemeCoin, MaxSupply = 420690000000000 };
 
         // User reviews
         var rev1 = new UserReview(1, "Alice", "Great UI", binance) { Rating = 4, DatePosted = System.DateTime.Now.AddDays(-5) };

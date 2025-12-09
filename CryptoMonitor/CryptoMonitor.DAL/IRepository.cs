@@ -22,6 +22,7 @@ public interface IRepository
     void CreateCryptocurrency(Cryptocurrency cryptocurrency);
     void CreateExchange(Exchange exchange);
     void CreateUserReview(UserReview review);
+    IEnumerable<UserReview> ReadAllUserReviews();
     void AddListing(ExchangeListing listing);
     void RemoveListing(int exchangeId, int cryptoId);
 }

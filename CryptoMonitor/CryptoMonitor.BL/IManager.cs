@@ -19,27 +19,29 @@ public interface IManager
     IEnumerable<Exchange> GetAllExchangesWithDetails();
     Exchange GetExchangeWithDetails(int id);
     
-    void AddCryptocurrency(
-        string name, 
-        string symbol, 
-        double currentPrice, 
-        CryptoType type, 
-        long? maxSupply, 
+    IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> AddCryptocurrency(
+        string name,
+        string symbol,
+        decimal currentPrice,
+        CryptoType type,
+        long? maxSupply,
         List<Exchange> exchanges
-        );
-    void AddExchange(
-        string name, 
-        string website, 
-        int trustScore, 
+    );
+    IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> AddExchange(
+        string name,
+        string website,
+        int trustScore,
         List<Cryptocurrency> cryptocurrencies
-        );
-    void AddUserReview(
-        string userName, 
-        string comment, 
-        int rating, 
+    );
+    IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> AddUserReview(
+        string userName,
+        string comment,
+        int rating,
         Exchange exchange
-        );
+    );
+
+    IEnumerable<UserReview> GetAllUserReviews();
     
-    void AddListing(int exchangeId, int cryptoId);
+    void AddListing(int exchangeId, int cryptoId, DateTime listingDate);
     void RemoveListing(int exchangeId, int cryptoId);
 }

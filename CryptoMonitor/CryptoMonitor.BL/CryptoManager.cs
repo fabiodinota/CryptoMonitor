@@ -65,7 +65,12 @@ namespace CryptoMonitor.BL
             return _repository.ReadExchangeWithCryptocurrenciesAndReviews(id);
         }
 
-        public void AddCryptocurrency(string name, string symbol, double currentPrice, CryptoType type, long? maxSupply,
+        public IEnumerable<ValidationResult> AddCryptocurrency(
+            string name,
+            string symbol,
+            decimal currentPrice,
+            CryptoType type,
+            long? maxSupply,
             List<Exchange> exchanges)
         {
             var cryptocurrency = new Cryptocurrency
@@ -77,9 +82,9 @@ namespace CryptoMonitor.BL
                 MaxSupply = maxSupply
             };
 
-            var isValid = ValidateByTryValidateObject(cryptocurrency);
+            var validationResults = ValidateByTryValidateObject(cryptocurrency);
 
-            if (isValid)
+            if (!validationResults.Any())
             {
                 foreach (var exchange in exchanges)
                 {
@@ -94,12 +99,16 @@ namespace CryptoMonitor.BL
                 }
 
                 _repository.CreateCryptocurrency(cryptocurrency);
-                
-                Console.WriteLine("Cryptocurrency added successfully!");
             }
+
+            return validationResults;
         }
 
-        public void AddExchange(string name, string website, int trustScore, List<Cryptocurrency> cryptocurrencies)
+        public IEnumerable<ValidationResult> AddExchange(
+            string name,
+            string website,
+            int trustScore,
+            List<Cryptocurrency> cryptocurrencies)
         {
             var exchange = new Exchange
             {
@@ -108,9 +117,9 @@ namespace CryptoMonitor.BL
                 TrustScore = trustScore
             };
 
-            var isValid = ValidateByTryValidateObject(exchange);
+            var validationResults = ValidateByTryValidateObject(exchange);
 
-            if (isValid)
+            if (!validationResults.Any())
             {
                 foreach (var crypto in cryptocurrencies)
                 {
@@ -125,12 +134,12 @@ namespace CryptoMonitor.BL
                 }
 
                 _repository.CreateExchange(exchange);
-                
-                Console.WriteLine("Exchange added successfully!");
             }
+
+            return validationResults;
         }
 
-        public void AddUserReview(string userName, string comment, int rating, Exchange exchange)
+        public IEnumerable<ValidationResult> AddUserReview(string userName, string comment, int rating, Exchange exchange)
         {
             var review = new UserReview
             {
@@ -140,54 +149,58 @@ namespace CryptoMonitor.BL
                 DatePosted = DateTime.Now,
                 Exchange = exchange
             };
-            
-            var isValid = ValidateByTryValidateObject(review);
+            var validationResults = ValidateByTryValidateObject(review);
 
-            if (isValid)
+            if (!validationResults.Any())
             {
                 exchange.Reviews.Add(review);
 
                 _repository.CreateUserReview(review);
-                
-                Console.WriteLine("User Review added successfully!");
             }
+
+            return validationResults;
+        }
+
+        public IEnumerable<UserReview> GetAllUserReviews()
+        {
+            return _repository.ReadAllUserReviews();
         }
         
-        public void AddListing(int exchangeId, int cryptoId)
+        public void AddListing(int exchangeId, int cryptoId, DateTime listingDate)
         {
             var exchange = _repository.ReadExchange(exchangeId);
+            if (exchange == null)
+            {
+                throw new ArgumentException("Exchange not found.", nameof(exchangeId));
+            }
+
+            var crypto = _repository.ReadCryptocurrency(cryptoId);
+            if (crypto == null)
+            {
+                throw new ArgumentException("Cryptocurrency not found.", nameof(cryptoId));
+            }
 
             var listing = new ExchangeListing
             {
                 ExchangeId = exchangeId,
                 CryptocurrencyId = cryptoId,
-                ListingDate = DateTime.Now
+                ListingDate = listingDate
             };
 
             _repository.AddListing(listing);
-            Console.WriteLine("Listing succesfully added!");
         }
 
         public void RemoveListing(int exchangeId, int cryptoId)
         {
             _repository.RemoveListing(exchangeId, cryptoId);
-            Console.WriteLine("Listing succesfully removed!");
         }
         
-        private static bool ValidateByTryValidateObject(object obj)
+        private static List<ValidationResult> ValidateByTryValidateObject(object obj)
         {
             ValidationContext validationContext = new ValidationContext(obj);
             List<ValidationResult> validationResults = new List<ValidationResult>();
-            bool isValid = Validator.TryValidateObject(obj, validationContext, validationResults, true);
-            
-            if (!isValid)
-            {
-                foreach (var validationError in validationResults)
-                {
-                    Console.WriteLine($"FOUT: {validationError.ErrorMessage}");
-                }
-            }
-            return isValid;
+            Validator.TryValidateObject(obj, validationContext, validationResults, true);
+            return validationResults;
         }
     }
 }

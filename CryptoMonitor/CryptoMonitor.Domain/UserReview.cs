@@ -8,10 +8,10 @@ namespace CryptoMonitor.Domain
         public int Id { get; set; }
         
         [Required]
-        public string UserName { get; set; }
+        public string UserName { get; set; } = string.Empty;
         
         [Required]
-        public string Comment { get; set; }
+        public string Comment { get; set; } = string.Empty;
         
         [Required]
         [Range(0, 5, ErrorMessage = "Rating must be between 0 and 5")]
@@ -19,6 +19,9 @@ namespace CryptoMonitor.Domain
         
         [Required]
         public DateTime DatePosted { get; set; }
+        
+        [Required]
+        public int ExchangeId { get; set; }
         
         [Required]
         public Exchange Exchange { get; set; }
@@ -31,6 +34,8 @@ namespace CryptoMonitor.Domain
             UserName = userName;
             Comment = comment;
             Exchange = exchange;
+            DatePosted = DateTime.UtcNow;
+            ExchangeId = exchange.Id;
         }
 
         public override string ToString()

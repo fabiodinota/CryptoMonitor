@@ -59,36 +59,33 @@
                     Listed Cryptocurrencies
                 </div>
                 <div class="card-body">
-                    @if (Model.Listings != null && Model.Listings.Any())
-                    {
-                        <table class="table table-sm table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Symbol</th>
-                                    <th>Name</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var listing in Model.Listings)
-                                {
-                                    <tr>
-                                        <td class="font-weight-bold">
-                                            <a asp-controller="Home" asp-action="Details" asp-route-id="@listing.CryptocurrencyId">
-                                                @listing.Cryptocurrency?.Symbol
-                                            </a>
-                                        </td>
-                                        <td>@listing.Cryptocurrency?.Name</td>
-                                        <td>@listing.ListingDate.ToString("HH:mm:ss zz")</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                    else
-                    {
-                        <p class="text-muted">No cryptocurrencies Found.</p>
-                    }
+                    <table class="table table-sm table-hover" id="listingsTable">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Loaded via JS -->
+                        </tbody>
+                    </table>
+                    
+                    <hr />
+                    <h5>Add Listing</h5>
+                    <div class="mb-3">
+                        <label for="cryptoSelect" class="form-label">Cryptocurrency</label>
+                        <select id="cryptoSelect" class="form-select">
+                            <option value="" disabled selected>Select a crypto...</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="listingDate" class="form-label">Listing Date</label>
+                        <input type="datetime-local" id="listingDate" class="form-control" />
+                    </div>
+                    <button id="btnAddListing" class="btn btn-primary btn-sm">Add to Exchange</button>
+                    <div id="addError" class="text-danger mt-2" style="display:none;"></div>
                 </div>
             </div>
         </div>
@@ -129,6 +126,113 @@
     </div>
 
     <div class="mt-3">
-        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Go back to cryptocurrencies</a>
+        <a asp-controller="Exchange" asp-action="Index" class="btn btn-secondary">Go back to exchanges</a>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        const exchangeId = @Model.Id;
+        const listingsTableBody = document.querySelector('#listingsTable tbody');
+        const cryptoSelect = document.getElementById('cryptoSelect');
+        const btnAddListing = document.getElementById('btnAddListing');
+        const listingDateInput = document.getElementById('listingDate');
+        const addError = document.getElementById('addError');
+
+        // Set default date to now
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        listingDateInput.value = now.toISOString().slice(0, 16);
+
+        function fetchListings() {
+            fetch(`/api/ExchangeListingsRest/by-exchange/${exchangeId}`)
+                .then(res => res.json())
+                .then(data => {
+                    listingsTableBody.innerHTML = '';
+                    if (data.length === 0) {
+                        listingsTableBody.innerHTML = '<tr><td colspan="3" class="text-muted">No listings found.</td></tr>';
+                        return;
+                    }
+                    
+                    data.forEach(item => {
+                        const date = new Date(item.listingDate).toLocaleString();
+                        const row = `
+                            <tr>
+                                <td class="font-weight-bold">
+                                    <a href="/Crypto/Details/${item.cryptocurrencyId}">${item.cryptocurrencySymbol}</a>
+                                </td>
+                                <td>${item.cryptocurrencyName}</td>
+                                <td>${date}</td>
+                            </tr>
+                        `;
+                        listingsTableBody.insertAdjacentHTML('beforeend', row);
+                    });
+                })
+                .catch(err => console.error("Error fetching listings", err));
+        }
+
+        function fetchAvailableCryptos() {
+            fetch(`/api/ExchangeListingsRest/available-cryptos/${exchangeId}`)
+                .then(res => res.json())
+                .then(data => {
+                    cryptoSelect.innerHTML = '<option value="" disabled selected>Select a crypto...</option>';
+                    
+                    data.forEach(c => {
+                        const option = document.createElement('option');
+                        option.value = c.id;
+                        option.text = `${c.name} (${c.symbol})`;
+                        cryptoSelect.appendChild(option);
+                    });
+                })
+                .catch(err => console.error("Error fetching available cryptos", err));
+        }
+
+        function addListing() {
+            const cryptoId = cryptoSelect.value;
+            const date = listingDateInput.value;
+
+            if (!cryptoId) {
+                alert("Please select a cryptocurrency.");
+                return;
+            }
+
+            const payload = {
+                exchangeId: exchangeId,
+                cryptoId: parseInt(cryptoId),
+                listingDate: date
+            };
+
+            btnAddListing.disabled = true;
+            addError.style.display = 'none';
+
+            fetch('/api/ExchangeListingsRest', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => {
+                if (res.ok) {
+                    // Success
+                    fetchListings();
+                    fetchAvailableCryptos(); // Refresh dropdown
+                } else {
+                    return res.text().then(text => { throw new Error(text || res.statusText) });
+                }
+            })
+            .catch(err => {
+                addError.textContent = "Failed to add listing: " + err.message;
+                addError.style.display = 'block';
+            })
+            .finally(() => {
+                btnAddListing.disabled = false;
+            });
+        }
+
+        btnAddListing.addEventListener('click', addListing);
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchListings();
+            fetchAvailableCryptos();
+        });
+    </script>
+}

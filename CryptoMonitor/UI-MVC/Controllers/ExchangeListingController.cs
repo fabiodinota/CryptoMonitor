@@ -15,24 +15,21 @@ namespace CryptoMonitor.UI.MVC.Controllers
             _cryptoManager = manager;
         }
 
-        // GET: /ExchangeListing
-        // Toont een overzicht van alle listings ("New exchange listings")
+      
         [HttpGet]
         public IActionResult Index()
         {
-            // We halen alle exchanges op met hun listings (Eager Loading)
-            // en 'flatten' dit naar één grote lijst van listings.
+            
             var exchanges = _cryptoManager.GetAllExchangesWithDetails();
             
             var allListings = exchanges
                 .SelectMany(e => e.Listings)
-                .OrderByDescending(l => l.ListingDate) // Nieuwste eerst
+                .OrderByDescending(l => l.ListingDate)
                 .ToList();
 
             return View(allListings);
         }
 
-        // GET: /ExchangeListing/Add
         [HttpGet]
         public IActionResult Add()
         {
@@ -45,7 +42,6 @@ namespace CryptoMonitor.UI.MVC.Controllers
             return View(model);
         }
 
-        // POST: /ExchangeListing/Add
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Add(AddExchangeListingViewModel model)
@@ -54,8 +50,7 @@ namespace CryptoMonitor.UI.MVC.Controllers
             {
                 try
                 {
-                    // Roep de methode aan die we in Sprint 4 hebben gemaakt
-                    _cryptoManager.AddListing(model.SelectedExchangeId, model.SelectedCryptoId);
+                    _cryptoManager.AddListing(model.SelectedExchangeId, model.SelectedCryptoId, DateTime.Now);
                     return RedirectToAction("Index");
                 }
                 catch (Exception ex)
@@ -64,7 +59,6 @@ namespace CryptoMonitor.UI.MVC.Controllers
                 }
             }
 
-            // Als het mislukt, vul de dropdowns opnieuw
             model.Cryptos = new SelectList(_cryptoManager.GetAllCryptocurrencies(), "Id", "Name");
             model.Exchanges = new SelectList(_cryptoManager.GetAllExchanges(), "Id", "Name");
             

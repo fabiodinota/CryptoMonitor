@@ -16,8 +16,8 @@ namespace CryptoMonitor.UI.MVC.Models
         public string Symbol { get; set; }
 
         [Required]
-        [Range(0, double.MaxValue, ErrorMessage = "Price has to be positive")]
-        public double CurrentPrice { get; set; }
+        [Range(typeof(decimal), "0.01", "79228162514264337593543950335", ErrorMessage = "Price has to be positive")]
+        public decimal CurrentPrice { get; set; }
 
         [Required]
         public CryptoType Type { get; set; }

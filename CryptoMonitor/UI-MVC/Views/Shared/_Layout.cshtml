@@ -29,22 +29,26 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="ExchangeListing" asp-action="Index">Listings</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="UserReviews" asp-action="Index">Reviews</a>
+                    </li>
                     
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
+                    <partial name="_LiveMonitoringLinkPartial" />
                 </ul>
             </div>
         </div>
     </nav>
 </header>
-<div class="container">
+<div style="min-height: 80vh;" class="container">
     <main role="main" class="pb-3">
         @RenderBody()
     </main>
 </div>
 
-<footer class="border-top footer text-muted">
+<footer class="border-top pt-3 footer text-muted">
     <div class="container">
         &copy; 2025 - Fabio Di Nota - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
     </div>

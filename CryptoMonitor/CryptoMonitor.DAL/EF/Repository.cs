@@ -131,9 +131,37 @@ public class Repository : IRepository
         _context.UserReviews.Add(review);
         _context.SaveChanges();
     }
+
+    public IEnumerable<UserReview> ReadAllUserReviews()
+    {
+        return _context.UserReviews
+            .Include(r => r.Exchange)
+            .AsEnumerable();
+    }
     
     public void AddListing(ExchangeListing listing)
     {
+        bool exchangeExists = _context.Exchanges.Any(e => e.Id == listing.ExchangeId);
+        bool cryptoExists = _context.Cryptocurrencies.Any(c => c.Id == listing.CryptocurrencyId);
+
+        if (!exchangeExists)
+        {
+            throw new ArgumentException("Exchange not found.", nameof(listing.ExchangeId));
+        }
+
+        if (!cryptoExists)
+        {
+            throw new ArgumentException("Cryptocurrency not found.", nameof(listing.CryptocurrencyId));
+        }
+
+        bool alreadyListed = _context.Set<ExchangeListing>()
+            .Any(l => l.ExchangeId == listing.ExchangeId && l.CryptocurrencyId == listing.CryptocurrencyId);
+
+        if (alreadyListed)
+        {
+            throw new InvalidOperationException("This cryptocurrency is already listed on the exchange.");
+        }
+
         _context.Set<ExchangeListing>().Add(listing);
         _context.SaveChanges();
     }

@@ -1,3 +1,4 @@
+using AspNetCoreLiveMonitoring.Extensions;
 using CryptoMonitor.BL;
 using CryptoMonitor.DAL;
 using CryptoMonitor.DAL.EF;
@@ -12,6 +13,9 @@ builder.Services.AddDbContext<CryptoMonitorDbContext>(options =>
 
 builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddScoped<IManager, CryptoManager>();
+
+// Register Live Monitoring Service
+builder.Services.AddLiveMonitoring();
 
 var app = builder.Build();
 
@@ -38,6 +42,8 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseAndMapLiveMonitoring();
 
 app.MapStaticAssets();
 

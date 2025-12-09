@@ -8,9 +8,10 @@ namespace CryptoMonitor.Domain
     {
         public int Id { get; set; }
         
-        [Required]
-        public string Name { get; set; }
-        public string Website { get; set; }
+        [Required, MaxLength(50)]
+        public string Name { get; set; } = string.Empty;
+        [MaxLength(100)]
+        public string? Website { get; set; }
         
         [Range(1, 10, ErrorMessage = "Trust Score must be between 1 and 10")]
         public int TrustScore { get; set; } 

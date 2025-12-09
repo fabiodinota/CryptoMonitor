@@ -12,4 +12,8 @@
       <ProjectReference Include="..\CryptoMonitor.Domain\CryptoMonitor.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="KdGTI.AspNetCore.LiveMonitoring" Version="1.2.2" />
+    </ItemGroup>
+
 </Project>
