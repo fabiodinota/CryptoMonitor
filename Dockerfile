@@ -4,7 +4,7 @@ WORKDIR /src
 
 # Copy the Solution file and Project files first (for better caching)
 COPY ["CryptoMonitor.sln", "./"]
-COPY ["CryptoMonitor.UI.MVC/UI-MVC.csproj", "CryptoMonitor.UI.MVC/"]
+COPY ["UI-MVC/UI-MVC.csproj", "UI-MVC/"]
 COPY ["CryptoMonitor.BL/CryptoMonitor.BL.csproj", "CryptoMonitor.BL/"]
 COPY ["CryptoMonitor.DAL/CryptoMonitor.DAL.csproj", "CryptoMonitor.DAL/"]
 COPY ["CryptoMonitor.Domain/CryptoMonitor.Domain.csproj", "CryptoMonitor.Domain/"]
@@ -16,8 +16,8 @@ RUN dotnet restore "CryptoMonitor.sln"
 # Copy the rest of the source code
 COPY . .
 
-# Build and Publish the MVC project
-WORKDIR "/src/CryptoMonitor.UI.MVC"
+# ✅ Build and Publish the MVC project (fixed path)
+WORKDIR "/src/UI-MVC"
 RUN dotnet publish "UI-MVC.csproj" -c Release -o /app/publish
 
 # Stage 2: Run the application
